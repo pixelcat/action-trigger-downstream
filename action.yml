@@ -3,8 +3,8 @@ name: "Trigger Downstream Build"
 author: "Kenzi Stewart <kstewart@speareducation.com>"
 description: "Triggers a downstream docker build by branching, updating configuration, and committing"
 inputs:
-  repository:
-    description: Github repository to update
+  path:
+    description: Path relative to GITHUB_WORKSPACE containing the repository to trigger
     required: true
   branch-prefix:
     description: Prefix to use when creating branch (e.g. "upstream/")
@@ -23,16 +23,11 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Clone repository
-      shell: bash
-      run: |
-        REPOSITORY_DIRNAME=$(echo "${{ inputs.repository }}" | sed -e 's%/%-%g')
-        git clone "git@github.com:${{ inputs.repository }}" "/github/workspace/${REPOSITORY_DIRNAME}"
     - name: Create upstream branch
       shell: bash
       run: |
         REPOSITORY_DIRNAME=$(echo "${{ inputs.repository }}" | sed -e 's%/%-%g')
-        cd "/github/workspace/${REPOSITORY_DIRNAME}" || { echo "Could not change to directory. Exiting." && exit 254; }
+        cd "${GITHUB_WORKSPACE}/${REPOSITORY_DIRNAME}" || { echo "Could not change to directory. Exiting." && exit 254; }
         UPSTREAM_BRANCH_PREFIX="${{ inputs.branch-prefix }}"
         TRIGGERING_VERSION="${{ inputs.triggering-version }}"
         git checkout -b "${UPSTREAM_BRANCH_PREFIX}/test-${TRIGGERING_VERSION}"
@@ -40,14 +35,14 @@ runs:
       shell: bash
       run: |
         REPOSITORY_DIRNAME=$(echo "${{ inputs.repository }}" | sed -e 's%/%-%g')
-        cd "/github/workspace/${REPOSITORY_DIRNAME}" ||  { echo "Could not change to directory. Exiting." && exit 254; }
+        cd "${GITHUB_WORKSPACE}/${REPOSITORY_DIRNAME}" ||  { echo "Could not change to directory. Exiting." && exit 254; }
         TRIGGERING_VERSION="${{ inputs.triggering-version }}"
         sed -i -e "s/^DOCKER_BASE_IMAGE_VER=.*$/DOCKER_BASE_IMAGE_VER=${TRIGGERING_VERSION}/g" .config
     - name: Commit updated config to dependent repository
       shell: bash
       run: |
         REPOSITORY_DIRNAME=$(echo "${{ inputs.repository }}" | sed -e 's%/%-%g')
-        cd "/github/workspace/${REPOSITORY_DIRNAME}" || { echo "Could not change to directory. Exiting." && exit 254; }
+        cd "${GITHUB_WORKSPACE}/${REPOSITORY_DIRNAME}" || { echo "Could not change to directory. Exiting." && exit 254; }
         git add .config
         case "${{ inputs.change-type }}" in
           patch)
