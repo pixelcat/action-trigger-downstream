@@ -26,14 +26,16 @@ runs:
     - name: Create upstream branch
       shell: bash
       run: |
+        set -ex
         REPOSITORY_DIRNAME=$(echo "${{ inputs.repository }}" | sed -e 's%/%-%g')
         cd "${GITHUB_WORKSPACE}/${REPOSITORY_DIRNAME}" || { echo "Could not change to directory. Exiting." && exit 254; }
         UPSTREAM_BRANCH_PREFIX="${{ inputs.branch-prefix }}"
         TRIGGERING_VERSION="${{ inputs.triggering-version }}"
-        git checkout -b "${UPSTREAM_BRANCH_PREFIX}/test-${TRIGGERING_VERSION}"
+        git checkout -b "${UPSTREAM_BRANCH_PREFIX}test-${TRIGGERING_VERSION}"
     - name: Update .config with new upstream version
       shell: bash
       run: |
+        set -ex
         REPOSITORY_DIRNAME=$(echo "${{ inputs.repository }}" | sed -e 's%/%-%g')
         cd "${GITHUB_WORKSPACE}/${REPOSITORY_DIRNAME}" ||  { echo "Could not change to directory. Exiting." && exit 254; }
         TRIGGERING_VERSION="${{ inputs.triggering-version }}"
@@ -41,7 +43,10 @@ runs:
     - name: Commit updated config to dependent repository
       shell: bash
       run: |
+        set -ex
         REPOSITORY_DIRNAME=$(echo "${{ inputs.repository }}" | sed -e 's%/%-%g')
+        TRIGGERING_VERSION="${{ inputs.triggering-version }}"
+        UPSTREAM_BRANCH_PREFIX="${{ inputs.branch-prefix }}"
         cd "${GITHUB_WORKSPACE}/${REPOSITORY_DIRNAME}" || { echo "Could not change to directory. Exiting." && exit 254; }
         git add .config
         case "${{ inputs.change-type }}" in
@@ -56,6 +61,4 @@ runs:
             ;;
         esac
         git commit -m "${CHANGE_TYPE} updated base image to version ${TRIGGERING_VERSION}"
-        UPSTREAM_BRANCH_PREFIX="${{ inputs.branch-prefix }}"
-        TRIGGERING_VERSION="${{ inputs.triggering-version }}"
-        git push origin "${UPSTREAM_BRANCH_PREFIX}/test-${TRIGGERING_VERSION}"
+        git push origin "${UPSTREAM_BRANCH_PREFIX}test-${TRIGGERING_VERSION}"
