@@ -27,7 +27,7 @@ runs:
       shell: bash
       run: |
         set -ex
-        REPOSITORY_DIRNAME=$(echo "${{ inputs.repository }}" | sed -e 's%/%-%g')
+        REPOSITORY_DIRNAME="${{ inputs.path }}"
         cd "${GITHUB_WORKSPACE}/${REPOSITORY_DIRNAME}" || { echo "Could not change to directory. Exiting." && exit 254; }
         UPSTREAM_BRANCH_PREFIX="${{ inputs.branch-prefix }}"
         TRIGGERING_VERSION="${{ inputs.triggering-version }}"
@@ -36,7 +36,7 @@ runs:
       shell: bash
       run: |
         set -ex
-        REPOSITORY_DIRNAME=$(echo "${{ inputs.repository }}" | sed -e 's%/%-%g')
+        REPOSITORY_DIRNAME="${{ inputs.path }}"
         cd "${GITHUB_WORKSPACE}/${REPOSITORY_DIRNAME}" ||  { echo "Could not change to directory. Exiting." && exit 254; }
         TRIGGERING_VERSION="${{ inputs.triggering-version }}"
         sed -i -e "s/^DOCKER_BASE_IMAGE_VER=.*$/DOCKER_BASE_IMAGE_VER=${TRIGGERING_VERSION}/g" .config
@@ -44,7 +44,7 @@ runs:
       shell: bash
       run: |
         set -ex
-        REPOSITORY_DIRNAME=$(echo "${{ inputs.repository }}" | sed -e 's%/%-%g')
+        REPOSITORY_DIRNAME="${{ inputs.path }}"
         TRIGGERING_VERSION="${{ inputs.triggering-version }}"
         UPSTREAM_BRANCH_PREFIX="${{ inputs.branch-prefix }}"
         cd "${GITHUB_WORKSPACE}/${REPOSITORY_DIRNAME}" || { echo "Could not change to directory. Exiting." && exit 254; }
