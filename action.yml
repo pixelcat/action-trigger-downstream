@@ -62,4 +62,5 @@ runs:
             ;;
         esac
         git commit -m "${CHANGE_TYPE} updated base image to version ${TRIGGERING_VERSION}"
+        git pull
         git push origin "${UPSTREAM_BRANCH_PREFIX}test-${TRIGGERING_VERSION}"
