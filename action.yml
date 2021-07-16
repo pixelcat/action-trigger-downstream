@@ -33,7 +33,6 @@ runs:
         TRIGGERING_VERSION="${{ inputs.triggering-version }}"
         git fetch
         git checkout -b "${UPSTREAM_BRANCH_PREFIX}test-${TRIGGERING_VERSION}"
-        git pull
     - name: Update .config with new upstream version
       shell: bash
       run: |
