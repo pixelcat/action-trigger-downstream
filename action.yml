@@ -55,10 +55,10 @@ runs:
             CHANGE_TYPE="patch: "
             ;;
           minor)
-            CHANGE_TYPE="feat:"
+            CHANGE_TYPE="feat: "
             ;;
           major)
-            CHANGE_TYPE="BREAKING CHANGE:"
+            CHANGE_TYPE="BREAKING CHANGE: "
             ;;
         esac
         git commit -m "${CHANGE_TYPE} updated base image to version ${TRIGGERING_VERSION}"
