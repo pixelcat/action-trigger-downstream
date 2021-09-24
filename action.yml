@@ -34,7 +34,7 @@ runs:
         BRANCH_NAME="${UPSTREAM_BRANCH_PREFIX}test-${TRIGGERING_VERSION}"
         git fetch
         BRANCH_FLAG=""
-        git branch -r | grep -q -i "${BRANCH_NAME}" && BRANCH_FLAG="-q"
+        git branch -r | grep -q -i "${BRANCH_NAME}" && BRANCH_FLAG="-b"
         git checkout ${BRANCH_FLAG} "${UPSTREAM_BRANCH_PREFIX}test-${TRIGGERING_VERSION}"
     - name: Update .config with new upstream version
       shell: bash
