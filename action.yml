@@ -31,8 +31,11 @@ runs:
         cd "${GITHUB_WORKSPACE}/${REPOSITORY_DIRNAME}" || { echo "Could not change to directory. Exiting." && exit 254; }
         UPSTREAM_BRANCH_PREFIX="${{ inputs.branch-prefix }}"
         TRIGGERING_VERSION="${{ inputs.triggering-version }}"
+        BRANCH_NAME="${UPSTREAM_BRANCH_PREFIX}test-${TRIGGERING_VERSION}"
         git fetch
-        git checkout -b "${UPSTREAM_BRANCH_PREFIX}test-${TRIGGERING_VERSION}"
+        BRANCH_FLAG=""
+        git branch -r | grep -q -i "${BRANCH_NAME}" && BRANCH_FLAG="-q"
+        git checkout ${BRANCH_FLAG} "${UPSTREAM_BRANCH_PREFIX}test-${TRIGGERING_VERSION}"
     - name: Update .config with new upstream version
       shell: bash
       run: |
@@ -62,6 +65,4 @@ runs:
             ;;
         esac
         git commit -m "${CHANGE_TYPE} updated base image to version ${TRIGGERING_VERSION}"
-        git branch --set-upstream-to="origin/${UPSTREAM_BRANCH_PREFIX}test-${TRIGGERING_VERSION}" "${UPSTREAM_BRANCH_PREFIX}test-${TRIGGERING_VERSION}"
-        git pull
         git push origin "${UPSTREAM_BRANCH_PREFIX}test-${TRIGGERING_VERSION}"
