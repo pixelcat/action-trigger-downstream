@@ -31,11 +31,26 @@ runs:
         cd "${GITHUB_WORKSPACE}/${REPOSITORY_DIRNAME}" || { echo "Could not change to directory. Exiting." && exit 254; }
         UPSTREAM_BRANCH_PREFIX="${{ inputs.branch-prefix }}"
         TRIGGERING_VERSION="${{ inputs.triggering-version }}"
-        BRANCH_NAME="${UPSTREAM_BRANCH_PREFIX}test-${TRIGGERING_VERSION}"
+
         git fetch
         BRANCH_FLAG=""
+        case "${{ inputs.change-type }}" in
+          patch)
+            CHANGE_TYPE="patch: "
+            BRANCH_TYPE="patch-"
+            ;;
+          minor)
+            CHANGE_TYPE="feat: "
+            BRANCH_TYPE="minor-"
+            ;;
+          major)
+            CHANGE_TYPE="BREAKING CHANGE: "
+            BRANCH_TYPE="major-"
+            ;;
+        esac
+        BRANCH_NAME="${UPSTREAM_BRANCH_PREFIX}${BRANCH_TYPE}-${TRIGGERING_VERSION}"
         git branch -r | grep -q -i "${BRANCH_NAME}" || BRANCH_FLAG="-b"
-        git checkout ${BRANCH_FLAG} "${UPSTREAM_BRANCH_PREFIX}test-${TRIGGERING_VERSION}"
+        git checkout ${BRANCH_FLAG} "${BRANCH_NAME}"
     - name: Update .config with new upstream version
       shell: bash
       run: |
