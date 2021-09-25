@@ -56,13 +56,16 @@ runs:
         case "${{ inputs.change-type }}" in
           patch)
             CHANGE_TYPE="patch: "
+            BRANCH_TYPE="patch-"
             ;;
           minor)
             CHANGE_TYPE="feat: "
+            BRANCH_TYPE="minor-"
             ;;
           major)
             CHANGE_TYPE="BREAKING CHANGE: "
+            BRANCH_TYPE="major-"
             ;;
         esac
         git commit -m "${CHANGE_TYPE} updated base image to version ${TRIGGERING_VERSION}"
-        git push origin "${UPSTREAM_BRANCH_PREFIX}test-${TRIGGERING_VERSION}"
+        git push origin "${UPSTREAM_BRANCH_PREFIX}${BRANCH_TYPE}-${TRIGGERING_VERSION}"
